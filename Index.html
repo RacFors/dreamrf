@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DreamRF - AI Sports Predictions</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-4">
+  <div class="max-w-3xl mx-auto">
+    <h1 class="text-3xl font-bold mb-4">DreamRF - AI Sports Predictions</h1>
+    <div id="matches" class="space-y-4">Loading matches...</div>
+  </div>
+
+  <script>
+    async function fetchMatches() {
+      const res = await fetch("https://www.thesportsdb.com/api/v1/json/1/eventsday.php?d=2025-06-17&s=Soccer");
+      const data = await res.json();
+      const container = document.getElementById('matches');
+      container.innerHTML = '';
+
+      data.events?.forEach(event => {
+        const home = event.strHomeTeam;
+        const away = event.strAwayTeam;
+        const time = event.strTime;
+
+        const homeStrength = Math.random();
+        const awayStrength = Math.random();
+        const winChance = Math.round((homeStrength / (homeStrength + awayStrength)) * 100);
+        let tip = 'Tight match';
+        if (winChance > 60) tip = `Likely win for ${home}`;
+        else if (winChance < 40) tip = `Possible upset by ${away}`;
+
+        const card = document.createElement('div');
+        card.className = 'bg-white p-4 rounded shadow';
+        card.innerHTML = `
+          <h2 class="text-xl font-semibold">${home} vs ${away}</h2>
+          <p class="text-sm text-gray-500">${time}</p>
+          <div class="w-full bg-gray-200 rounded-full h-3 my-2">
+            <div class="bg-blue-600 h-3 rounded-full" style="width: ${winChance}%"></div>
+          </div>
+          <p class="text-sm text-blue-700 italic">AI Tip: ${tip}</p>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    fetchMatches();
+  </script>
+</body>
+</html>
